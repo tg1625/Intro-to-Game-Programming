@@ -1,0 +1,2 @@
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 1\Debug\SDLProject.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 1\Debug\SDLProject.pdb
