@@ -32,9 +32,9 @@ glm::vec3 ballMovement = normalize(glm::vec3(1, 1, 0));
 //Position Vectors
 glm::vec3 paddleLPosition, paddleRPosition, ballPosition;
 //Speeds
-float ballSpeed = 3.0f;
-float paddleLSpeed = 4.0f;
-float paddleRSpeed = 4.0f;
+float ballSpeed = 3.5f;
+float paddleLSpeed = 3.0f;
+float paddleRSpeed = 3.0f;
 
 //Hitboxes
 float paddleH = 2.0f;
