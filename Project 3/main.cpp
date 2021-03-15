@@ -151,7 +151,7 @@ void Initialize() {
     state.player->animIndex = 0;
     state.player->position = glm::vec3(0, 2.0f, 0);
     state.player->movement = glm::vec3(0);
-    state.player->acceleration = glm::vec3(0, -0.5f, 0);
+    state.player->acceleration = glm::vec3(0, -0.45f, 0);
     state.player->velocity = glm::vec3(0);
     state.player->speed = 2.0f;
 
