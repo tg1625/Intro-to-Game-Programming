@@ -20,6 +20,7 @@ void Entity::Update(float deltaTime, Entity* platforms, int platformCount, Entit
         collidedLeft = false;
         collidedRight = false;
 
+        //Animation tings
         if (animIndices != NULL) {
             if (!isLost && !isWon) {
                 animTime += deltaTime;
@@ -33,6 +34,7 @@ void Entity::Update(float deltaTime, Entity* platforms, int platformCount, Entit
             else animIndex = 1;
         }
 
+        //Movement tings
         if (!isLost && !isWon) {
             velocity += acceleration * deltaTime;
 
