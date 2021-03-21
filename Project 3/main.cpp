@@ -188,8 +188,8 @@ void Initialize() {
 
     //Win Flags Tings
     state.grass = new Entity[1];
-    GLuint vicTextureID = LoadTexture("grass.png");
-    state.grass[0].textureID = vicTextureID;
+    GLuint grassTextureID = LoadTexture("grass.png");
+    state.grass[0].textureID = grassTextureID;
     state.grass[0].position = glm::vec3(2.5, -3.25f, 0);
     state.grass[0].Update(0, NULL, 0, NULL);
     state.grass[0].entityType = EntityType::GRASS;
