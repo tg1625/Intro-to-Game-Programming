@@ -12,12 +12,18 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-enum EntityType { PLAYER, GROUND, BAT };
+enum EntityType { PLAYER, PLATFORM, ENEMY };
+
+enum AIType { BAT, BLOCKY, MOUSE };
+enum AIState { ATTACKING, PATROLLING, FLYING, IDLE };
 
 class Entity {
 public:
     
     enum EntityType entityType;
+
+    AIType aiType;
+    AIState aiState;
 
     glm::vec3 position;
     glm::vec3 movement;
@@ -56,6 +62,8 @@ public:
     bool collidedLeft = false;
     bool collidedRight = false;
 
+    bool forward = true;
+
     Entity();
 
     bool CheckCollision(Entity* other);
@@ -63,7 +71,14 @@ public:
     void CheckCollisionsY(Entity* objects, int objectCount);
     void CheckCollisionsX(Entity* objects, int objectCount);
 
-    void Update(float deltaTime, Entity* platforms, int platformCount);
+    void AI(Entity* player, float deltaTime);
+    void AIBat(Entity* player);
+    void AIBlocky(Entity* player);
+    void AIMouse(Entity* player);
+
+    void Animate(float deltaTime);
+
+    void Update(float deltaTime, Entity* player, Entity* platforms, int platformCount, Entity* enemies, int enemycount);
     void Render(ShaderProgram* program);
     void DrawSpriteFromTextureAtlas(ShaderProgram* program, GLuint textureID, int index);
 };
