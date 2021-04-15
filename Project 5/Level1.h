@@ -4,6 +4,6 @@ class Level1 : public Scene {
 
 public:
 	void Initialize() override;
-	void Update(float deltaTime) override;
+	glm::mat4 Update(float deltaTime, glm::mat4 viewMatrix) override;
 	void Render(ShaderProgram* program) override;
 };

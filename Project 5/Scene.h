@@ -18,11 +18,12 @@ struct GameState {
 	Entity* player;
 	Entity* enemies;
 	bool over;
+	int nextScene;
 };
 class Scene {
 public:
 	GameState state;
 	virtual void Initialize() = 0;
-	virtual void Update(float deltaTime) = 0;
+	virtual glm::mat4 Update(float deltaTime, glm::mat4 viewMatrix) = 0;
 	virtual void Render(ShaderProgram* program) = 0;
 };

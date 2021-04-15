@@ -55,7 +55,7 @@ public:
     int animRows = 0;
 
     bool isActive = true;
-    bool isLost = false;
+    bool isHit = false;
     bool isWon = false;
 
     bool collidedTop = false;

@@ -30,15 +30,15 @@ void Entity::AI(Entity* player, float deltaTime) {
 void Entity::AIBat(Entity* player) {
     switch (aiState){
         case IDLE:
-            if (glm::distance(position, player->position) < 3.0) aiState = FLYING;
+            if ( player->position.x > 2.5) aiState = FLYING;
             break;
         case FLYING:
             if (player->position.x < position.x) {
-                movement.x = -1.5;
+                movement.x = -2.0;
                 forward = true;
             }
             else {
-                movement.x = 1.5;
+                movement.x = 2.0;
                 forward = false;
             }
             if (player->position.y - 0.5< position.y) {
@@ -99,6 +99,7 @@ void Entity::Animate(float deltaTime) {
 void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, int enemyCount)
 {
     if (!isActive) return;
+    isHit = false;
 
     collidedTop = false;
     collidedBottom = false;
@@ -112,16 +113,15 @@ void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, i
         velocity += acceleration * deltaTime;
         position.y += velocity.y * deltaTime;        
         position.x += velocity.x * deltaTime;        
-
-        CheckCollisionsX(map);
+        if(aiType != BAT) CheckCollisionsX(map);
         if (collidedLeft) {
             collidedLeft = true;
         }
-        CheckCollisionsY(map);
+        if (aiType != BAT) CheckCollisionsY(map);
     }
 
     //Movement tings
-    if (entityType == PLAYER && !isLost && !isWon) {
+    if (entityType == PLAYER && !isHit && !isWon) {
         if (jump) {
             jump = false;
             velocity.y += jumpPower;
@@ -132,12 +132,12 @@ void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, i
 
         position.y += velocity.y * deltaTime;
         CheckCollisionsY(map);
-        //CheckCollisionsY(enemies, enemyCount);
+        CheckCollisionsY(enemies, enemyCount);
 
 
         position.x += velocity.x * deltaTime; 
         CheckCollisionsX(map);
-        // CheckCollisionsX(enemies, enemyCount);
+        CheckCollisionsX(enemies, enemyCount);
     }
 
     modelMatrix = glm::mat4(1.0f);
@@ -175,9 +175,9 @@ void Entity::CheckCollisionsY(Entity* objects, int objectCount)
                 position.y -= penetrationY;
                 velocity.y = 0;
                 collidedTop = true;
-                if (!isWon && !isLost) {
+                if (!isWon && !isHit) {
                     if (object->entityType == EntityType::ENEMY) {
-                        isLost = true;
+                        isHit = true;
                         animIndex = 1;
                     }
                 }
@@ -186,7 +186,7 @@ void Entity::CheckCollisionsY(Entity* objects, int objectCount)
                 position.y += penetrationY;
                 velocity.y = 0;
                 collidedBottom = true;
-                if (!isWon && !isLost) {
+                if (!isWon && !isHit) {
                     if (object->entityType == EntityType::ENEMY) object->isActive = false;
                 }
             }
@@ -244,10 +244,9 @@ void Entity::CheckCollisionsX(Entity* objects, int objectCount)
     for (int i = 0; i < objectCount; i++){
         Entity* object = &objects[i];
         if (CheckCollision(object)){
-            if (!isWon && !isLost) {
+            if (!isWon && !isHit) {
                 if (object->entityType == EntityType::ENEMY) {
-                    isLost = true;
-                    animIndex = 1;
+                    isHit = true;
                 }
             }
             float xdist = fabs(position.x - object->position.x);
