@@ -7,9 +7,9 @@ unsigned int level2_data[] =
  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0,
  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1,
- 1, 2, 2, 2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 1, 1,
- 1, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 2, 1, 1, 1,
+ 1, 1, 0, 0, 0, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1,
+ 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
@@ -29,7 +29,7 @@ void Level2::Initialize() {
     state.player->animIndices = new int[2]{ 0, 6 };
     state.player->animFrames = 2;
     state.player->animIndex = 0;
-    state.player->position = glm::vec3(2.0f, 0.0f, 0);
+    state.player->position = glm::vec3(1.0f, 0.0f, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.81, 0);
     state.player->velocity = glm::vec3(0);
@@ -51,7 +51,7 @@ void Level2::Initialize() {
     state.enemies[0].animIndices = new int[2]{ 0, 2 };
     state.enemies[0].animFrames = 2;
     state.enemies[0].animIndex = 0;
-    state.enemies[0].position = glm::vec3(6.0f, -1.25f, 0);
+    state.enemies[0].position = glm::vec3(5.0f, -1.25f, 0);
     state.enemies[0].movement = glm::vec3(0);
     state.enemies[0].acceleration = glm::vec3(0, -900.81, 0);
     state.enemies[0].velocity = glm::vec3(0);

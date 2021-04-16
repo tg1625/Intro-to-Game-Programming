@@ -30,7 +30,7 @@ void Entity::AI(Entity* player, float deltaTime) {
 void Entity::AIBat(Entity* player) {
     switch (aiState){
         case IDLE:
-            if ( player->position.x > 2.5) aiState = FLYING;
+            if ( player->position.x > 1.5) aiState = FLYING;
             break;
         case FLYING:
             if (player->position.x < position.x) {

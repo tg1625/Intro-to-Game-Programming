@@ -4,14 +4,14 @@
 #define LEVEL3_ENEMY_COUNT 1
 unsigned int level3_data[] =
 {
- 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
- 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 1,
- 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 2, 1,
- 1, 0, 0, 0, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1,
- 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+ 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+ 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 1,
+ 1, 0, 0 ,0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1,
+ 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 2, 2, 1, 1,
+ 1, 0, 0, 0, 2, 1, 1, 0, 0, 2, 2, 1, 1, 1, 1,
+ 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1
 };
 
 void Level3::Initialize() {
@@ -20,7 +20,7 @@ void Level3::Initialize() {
     //Player Tings
     state.player = new Entity();
     state.player->entityType = EntityType::PLAYER;
-    state.player->width = 1.0f;
+    state.player->width = 0.9f;
     state.player->height = 0.9f;
     state.player->jumpPower = 5.0f;
     state.player->textureID = Util::LoadTexture("player_spritesheet.png");
@@ -29,7 +29,7 @@ void Level3::Initialize() {
     state.player->animIndices = new int[2]{ 0, 6 };
     state.player->animFrames = 2;
     state.player->animIndex = 0;
-    state.player->position = glm::vec3(1.0f, 0.0f, 0);
+    state.player->position = glm::vec3(1.0f, 1.0f, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.81, 0);
     state.player->velocity = glm::vec3(0);
@@ -49,7 +49,7 @@ void Level3::Initialize() {
     state.enemies[0].animIndices = new int[2]{ 0, 2 };
     state.enemies[0].animFrames = 2;
     state.enemies[0].animIndex = 0;
-    state.enemies[0].position = glm::vec3(1.0f, -4.0f, 0);
+    state.enemies[0].position = glm::vec3(-1.0f, -4.0f, 0);
     state.enemies[0].movement = glm::vec3(0);
     state.enemies[0].acceleration = glm::vec3(0, 0, 0);
     state.enemies[0].velocity = glm::vec3(0);

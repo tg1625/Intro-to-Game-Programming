@@ -8,14 +8,15 @@ void WinScreen::Initialize() {
 
 }
 glm::mat4 WinScreen::Update(float deltaTime, glm::mat4 viewMatrix) {
+    viewMatrix = glm::mat4(1.0f);
     return viewMatrix;
 }
 void WinScreen::Render(ShaderProgram* program) {
     GLuint fontTextureID = Util::LoadTexture("font1.png");
 
-    Util::DrawText(program, fontTextureID, "You Win!", 0.5f, -0.25f,
-        glm::vec3(7.5f, -3.0f, 0));
-    Util::DrawText(program, fontTextureID, "[press enter to restart]", 0.5f, -0.25f,
-        glm::vec3(6.5f, -4, 0));
+    Util::DrawText(program, fontTextureID, "You win!", 0.5f, -0.25f,
+        glm::vec3(-3.0f, 0.0, 0));
+    Util::DrawText(program, fontTextureID, "[press enter to replay]", 0.5f, -0.25f,
+        glm::vec3(-3.0f, -0.75f, 0));
 
 }
