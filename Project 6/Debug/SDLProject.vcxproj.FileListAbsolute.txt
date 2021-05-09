@@ -1,0 +1,12 @@
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 1\Debug\SDLProject.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 1\Debug\SDLProject.pdb
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 2\Debug\Project 2.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 2\Debug\Project 2.pdb
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 3\Debug\Project 3.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 3\Debug\Project 3.pdb
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 4\Debug\Project 4.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 4\Debug\Project 4.pdb
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 5\Debug\Project 5.exe
+C:\Users\tatyg\Google Drive\School\8. Spring 2021\Intro to Game Programming\Projects\Project 5\Debug\Project 5.pdb
+C:\Users\tatyg\Desktop\Game Projects\Project 6\Debug\Project 6.exe
+C:\Users\tatyg\Desktop\Game Projects\Project 6\Debug\Project 6.pdb
