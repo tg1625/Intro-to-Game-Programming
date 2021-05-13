@@ -17,11 +17,15 @@
 #include "Scene.h"
 #include "MainMenu.h"
 #include "Level1.h"
+#include "Level2.h"
+#include "Level3.h"
 #include "LoseScreen.h"
 #include "WinScreen.h"
 
 #include "vector"
 #include "string"
+
+float invincibleTime = 0;
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
@@ -34,10 +38,17 @@ GLuint fontTextureID = Util::LoadTexture("font1.png");;
 
 //Music
 Mix_Music* music;
-Mix_Chunk* bounce;
+Mix_Chunk* hit;
+Mix_Chunk* win;
+Mix_Chunk* collect;
+Mix_Chunk* seen;
+Mix_Chunk* lose;
+
+//Sound Triggers
+bool noOpener = true;
 
 Scene* currentScene;
-Scene* sceneList[4];
+Scene* sceneList[6];
 
 void SwitchToScene(Scene* scene) {
     currentScene = scene;
@@ -60,9 +71,13 @@ void Initialize() {
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     music = Mix_LoadMUS("background.mp3");
-    bounce = Mix_LoadWAV("bounce.wav");
-    //Mix_PlayMusic(music, -1);
-    //Mix_VolumeMusic(MIX_MAX_VOLUME / 5);
+    hit = Mix_LoadWAV("hit2.wav");
+    win = Mix_LoadWAV("win.wav");
+    collect = Mix_LoadWAV("collect2.wav");
+    seen = Mix_LoadWAV("seen.wav");
+    lose = Mix_LoadWAV("lose2.wav");
+    Mix_PlayMusic(music, -1);
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 5);
 
     viewMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
@@ -83,18 +98,19 @@ void Initialize() {
 
     sceneList[0] = new MainMenu();
     sceneList[1] = new Level1();
-    sceneList[2] = new LoseScreen();
-    sceneList[3] = new WinScreen();
+    sceneList[2] = new Level2();
+    sceneList[3] = new Level3();
+    sceneList[4] = new LoseScreen(); 
+    sceneList[5] = new WinScreen();
     SwitchToScene(sceneList[0]);
 }
 
 void ProcessInput() {
     SDL_Event event;
 
-    if (currentScene == sceneList[0] || currentScene == sceneList[2] || currentScene == sceneList[3]) {
+    if (currentScene == sceneList[0] || currentScene == sceneList[4] || currentScene == sceneList[5]) {
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                 case SDLK_RETURN:
@@ -108,34 +124,14 @@ void ProcessInput() {
     else {
         currentScene->state.player->movement = glm::vec3(0);
         currentScene->state.player->acceleration.x = 0.0f;
-
+        currentScene->state.player->animIndices = new int[1]{ 4 };
+        currentScene->state.player->animFrames = 1;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
             case SDL_QUIT:
             case SDL_WINDOWEVENT_CLOSE:
                 gameIsRunning = false;
                 break;
-
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym) {
-                case SDLK_LEFT:
-                    // Move the player left
-                    break;
-
-                case SDLK_RIGHT:
-                    // Move the player right
-                    break;
-
-                case SDLK_SPACE:
-                    // Some sort of action
-                    if (currentScene->state.player->collidedBottom) {
-                        currentScene->state.player->jump = true;
-                        Mix_PlayChannel(1, bounce, 0);
-                        Mix_VolumeChunk(bounce, MIX_MAX_VOLUME / 3);
-                    }
-                    break;
-                }
-                break; // SDL_KEYDOWN
             }
         }
 
@@ -143,21 +139,29 @@ void ProcessInput() {
 
         if (!currentScene->state.over) { //only let player move if the game is going
             if (keys[SDL_SCANCODE_LEFT]) {
+                currentScene->state.player->animIndices = new int[3]{ 3, 8, 13 };
+                currentScene->state.player->animFrames = 3;
                 if (!currentScene->state.player->collidedLeft || !currentScene->state.player->collidedRight) {
                     currentScene->state.player->movement.x = -1.0f;
                 }
             }
             if (keys[SDL_SCANCODE_RIGHT]) {
+                currentScene->state.player->animIndices = new int[3]{ 1, 6, 11 };
+                currentScene->state.player->animFrames = 3;
                 if (!currentScene->state.player->collidedLeft || !currentScene->state.player->collidedRight) {
                     currentScene->state.player->movement.x = 1.0f;
                 }
             }
             if (keys[SDL_SCANCODE_UP]) {
+                currentScene->state.player->animIndices = new int[3]{ 0, 5, 10 };
+                currentScene->state.player->animFrames = 3;
                 if (!currentScene->state.player->collidedTop || !currentScene->state.player->collidedBottom) {
                     currentScene->state.player->movement.y = 1.0f;
                 }
             }
             if (keys[SDL_SCANCODE_DOWN]) {
+                currentScene->state.player->animIndices = new int[3]{ 2, 7, 12};
+                currentScene->state.player->animFrames = 3;
                 if (!currentScene->state.player->collidedTop || !currentScene->state.player->collidedBottom) {
                     currentScene->state.player->movement.y = -1.0f;
                 }
@@ -165,6 +169,7 @@ void ProcessInput() {
             if (glm::length(currentScene->state.player->movement) > 1.0f) {
                 currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
             }
+            if(currentScene->state.player->animFrames == 1) currentScene->state.player->animIndex = 0;
 
         }
     }
@@ -196,17 +201,41 @@ void Update() {
             
         deltaTime -= FIXED_TIMESTEP;
     }
-    accumulator = deltaTime;
+    accumulator = deltaTime;  
 
-
-    ////If we got hit, we lose a life
-    //if (currentScene->state.player && currentScene->state.player->isHit) hits += 1;
-
-    
-
+    //Sound Effects
+    if (currentScene == sceneList[1] || currentScene == sceneList[2] || currentScene == sceneList[3]) {
+        if (noOpener && currentScene->state.player->hasOpener) {
+            Mix_PlayChannel(1, collect, 0);
+            Mix_VolumeChunk(collect, MIX_MAX_VOLUME / 3);
+            noOpener = false;
+        }
+        if (currentScene->state.player->isWon) {
+            Mix_PlayChannel(1, win, 0);
+            Mix_VolumeChunk(win, MIX_MAX_VOLUME / 3);
+        }
+        if (currentScene->state.player->isLost) {
+            Mix_PlayChannel(1, lose, 0);
+            Mix_VolumeChunk(lose, MIX_MAX_VOLUME / 3);
+        }
+        if (currentScene->state.player->isHit) {
+            Mix_PlayChannel(1, hit, 0);
+            Mix_VolumeChunk(hit, MIX_MAX_VOLUME / 3);
+            invincibleTime = 0.75;
+        }
+        if (currentScene->state.player->wasSeen) {
+            Mix_PlayChannel(1, seen, 0);
+            Mix_VolumeChunk(seen, MIX_MAX_VOLUME / 3);
+        }
+        invincibleTime -= deltaTime;
+        //SDL_Log("Invincible time: %f", invincibleTime);
+        if (invincibleTime <= 0) {
+            currentScene->state.player->isInvincible = false;
+        }
+    }
 }
 
-void Render() {
+void Render() {    
     glClear(GL_COLOR_BUFFER_BIT);
     program.SetViewMatrix(viewMatrix);
     currentScene->Render(&program);
@@ -219,6 +248,11 @@ void Render() {
 }
 
 void Shutdown() {
+    Mix_FreeChunk(collect);
+    Mix_FreeChunk(win);
+    Mix_FreeChunk(hit);
+    Mix_FreeChunk(seen);
+    Mix_FreeMusic(music);
     SDL_Quit();
 }
 
@@ -230,8 +264,10 @@ int main(int argc, char* argv[]) {
         Update();
 
         //Scene Switching Tingz
-        if(currentScene->state.nextScene >= 0) SwitchToScene(sceneList[currentScene->state.nextScene]);
-        if (currentScene->state.player && currentScene->state.player->isHit) SwitchToScene(currentScene);
+        if (currentScene->state.nextScene >= 0) {
+            noOpener = true;
+            SwitchToScene(sceneList[currentScene->state.nextScene]);
+        }
 
         Render();
     }

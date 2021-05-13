@@ -22,6 +22,9 @@ struct GameState {
 	Entity* opener;
 	bool over;
 	int nextScene;
+
+	float timer, startTime;
+	int hits;
 };
 class Scene {
 public:

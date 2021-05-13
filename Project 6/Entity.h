@@ -16,7 +16,7 @@
 enum EntityType { PLAYER, PLATFORM, ENEMY, CAN, OPENER };
 
 enum AIType { DAD };
-enum AIState { ATTACKING, PATROLLING, FLYING, IDLE };
+enum AIState { ATTACKING, PATROLLINGX, PATROLLINGY, IDLE };
 
 class Entity {
 public:
@@ -27,6 +27,7 @@ public:
     AIState aiState;
 
     glm::vec3 position;
+    glm::vec3 startingPosition;
     glm::vec3 movement;
     glm::vec3 acceleration;
     glm::vec3 velocity;
@@ -58,6 +59,9 @@ public:
     bool isHit = false;
     bool isWon = false;
     bool isLost = false;
+    bool isInvincible = false;
+    bool hasOpener = false;
+    bool wasSeen = false;
 
     bool collidedTop = false;
     bool collidedBottom = false;
@@ -81,7 +85,7 @@ public:
 
     void Animate(float deltaTime);
 
-    void Update(float deltaTime, Entity* player, Map* map, Entity* enemies, int enemycount);
+    void Update(float deltaTime, Entity* player, Map* map, Entity* enemies, int enemycount, Entity* can, Entity* opener);
     void Render(ShaderProgram* program);
     void DrawSpriteFromTextureAtlas(ShaderProgram* program, GLuint textureID, int index);
 };

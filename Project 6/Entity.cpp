@@ -23,39 +23,79 @@ void Entity::AI(Entity* player, float deltaTime) {
 void Entity::AIDad(Entity* player) {
     switch (aiState){
         case IDLE:
-            /*movement = glm::vec3(0, 0, 0);*/
-            if (glm::distance(position, player->position) < 3.0f) aiState = ATTACKING;
+            movement = glm::vec3(0, 0, 0);
+            animIndices = new int[1]{ 4 };
+            animFrames = 1;
+            if (glm::distance(position, player->position) < 3.5f) {
+                aiState = ATTACKING;
+                player->wasSeen = true;
+            }
             break;
         case ATTACKING:
             movement = glm::vec3(0, 0, 0);
-            //if out of range, go back to idle
-            if (glm::distance(position, player->position) > 3.0f){
-                aiState = IDLE;
-                break;
-            }
-            //else start chasing
             if (player->position.x > position.x) {
                 movement.x = 1.0;
+                animIndices = new int[3]{ 1, 6, 11 };
+                animFrames = 3;
             }
             else{
                 movement.x = -1.0;
+                animIndices = new int[3]{ 3, 8, 13 };
+                animFrames = 3;
             }
             if (player->position.y < position.y) {
                 movement.y = -1.0;
+                animIndices = new int[3]{ 2, 7, 12 };
+                animFrames = 3;
             }
             else {
                 movement.y = 1.0;
+                animIndices = new int[3]{ 0, 5, 10 };
+                animFrames = 3;
             }
+            player->wasSeen = false;
             if (glm::length(movement) > 1.0f) movement = glm::normalize(movement);  
             break;
-        /*case PATROLLING:
+        case PATROLLINGX:
+            movement = glm::vec3(0, 0, 0);
+            if (position.x - startingPosition.x > 2 || collidedRight) {
+                forward = false;
+            }
+            else if (position.x - startingPosition.x < -2 || collidedLeft) {
+                forward = true;
+            }
             if (forward == true) {
-                movement = glm::vec3(-1.0, 0.0f, 0);
+                movement = glm::vec3(1.0, 0.0f, 0);
+                animIndices = new int[3]{ 1, 6, 11 };
+                animFrames = 3;
             }
             else {
-                movement = glm::vec3(1.0, 0.0f, 0);
+                movement = glm::vec3(-1.0, 0.0f, 0);
+                animIndices = new int[3]{ 3, 8, 13 };
+                animFrames = 3;
             }
-            break;*/
+            if (glm::length(movement) > 1.0f) movement = glm::normalize(movement);
+            break;
+        case PATROLLINGY:
+            movement = glm::vec3(0, 0, 0);
+            if (position.y - startingPosition.y > 2 || collidedTop) {
+                forward = false;
+            }
+            else if (position.y - startingPosition.y < -2 || collidedBottom) {
+                forward = true;
+            }
+            if (forward == true) {
+                movement = glm::vec3(0.0, 1.0f, 0);
+                animIndices = new int[3]{ 0, 5, 10 };
+                animFrames = 3;
+            }
+            else {
+                movement = glm::vec3(0.0, -1.0f, 0);
+                animIndices = new int[3]{ 2, 7, 12 };
+                animFrames = 3;
+            }
+            if (glm::length(movement) > 1.0f) movement = glm::normalize(movement);
+            break;
     }
     
 }
@@ -73,7 +113,7 @@ void Entity::Animate(float deltaTime) {
     }
 }
 
-void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, int enemyCount)
+void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, int enemyCount, Entity* can, Entity* opener)
 {
     if (!isActive) return;
     isHit = false;
@@ -83,51 +123,65 @@ void Entity::Update(float deltaTime,Entity* player, Map* map, Entity* enemies, i
     collidedLeft = false;
     collidedRight = false;
 
+    //Update Enemy
     if (entityType == ENEMY) {
-        AI(player, deltaTime);
         velocity.x = movement.x * speed;
         velocity.y = movement.y * speed;
-        //velocity += acceleration * deltaTime;
-        position.y += velocity.y * deltaTime;        
-        position.x += velocity.x * deltaTime;      
 
-        //if(aiType != DAD) CheckCollisionsX(map);
-        //if (collidedLeft) {
-        //    collidedLeft = true;
-        //}
-        //if (aiType != BAT) CheckCollisionsY(map);
+        position.y += velocity.y * deltaTime; 
+        CheckCollisionsY(map);
+
+        position.x += velocity.x * deltaTime;     
+        CheckCollisionsX(map);
+        Animate(deltaTime);
+        AI(player, deltaTime);
+        
     }
 
-    //Movement tings
+    //Update Player
     if (entityType == PLAYER && !isHit && !isWon) {
-        if (jump) {
-            jump = false;
-            velocity.y += jumpPower;
+        Animate(deltaTime);
+        //Check Opener collisions
+        if (CheckCollision(opener) && !hasOpener) {
+            hasOpener = true;
+            opener->isActive = false; 
         }
+        //Check Can collisions
+        if (CheckCollision(can) && hasOpener){
+            isWon = true;
+        }
+        //Movement Things
         velocity.x = movement.x * speed;
         velocity.y = movement.y * speed;
-
         velocity += acceleration * deltaTime;
 
-        
         position.y += velocity.y * deltaTime;
         CheckCollisionsY(map);
-        CheckCollisionsY(enemies, enemyCount);
-
+        if (!isInvincible) {
+            //SDL_Log("Checking Cols Y");
+            CheckCollisionsY(enemies, enemyCount);
+        }
 
         position.x += velocity.x * deltaTime; 
         CheckCollisionsX(map);
-        CheckCollisionsX(enemies, enemyCount);
+        if (!isInvincible) {
+            //SDL_Log("Checking Cols X");
+            CheckCollisionsX(enemies, enemyCount);
+        }
+
+        //if hit, go back to starting position
+        if (isHit) {
+            isInvincible = true;
+            //SDL_Log("Invincible now: %d",isInvincible);
+        }
+
+        SDL_Log("Position is %f , %f", position.x, position.y);
     }
+
+    //Update Cab
 
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
-    if (forward) {
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1));
-    }
-    else {
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(-1, 1, 1));
-    } 
 }
 
 
